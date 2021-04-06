@@ -6,8 +6,10 @@ VPATH = $(srcdir)
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 
+LDFLAGS = -L/usr/local/lib -L/usr/X11R6/lib
+
 # autoreload backend: inotify/nop
-AUTORELOAD = inotify
+AUTORELOAD = nop
 
 # enable features requiring giflib (-lgif)
 HAVE_GIFLIB = 1
@@ -18,7 +20,8 @@ HAVE_LIBEXIF = 1
 cflags = -std=c99 -Wall -pedantic $(CFLAGS)
 cppflags = -I. $(CPPFLAGS) -D_XOPEN_SOURCE=700 \
   -DHAVE_GIFLIB=$(HAVE_GIFLIB) -DHAVE_LIBEXIF=$(HAVE_LIBEXIF) \
-  -I/usr/include/freetype2 -I$(PREFIX)/include/freetype2
+  -I/usr/X11R6/include/freetype2 -I$(PREFIX)/include/freetype2 \
+  -I/usr/local/include -I/usr/X11R6/include
 
 lib_exif_0 =
 lib_exif_1 = -lexif
@@ -68,15 +71,15 @@ install: all
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp sxiv $(DESTDIR)$(PREFIX)/bin/
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/sxiv
-	@echo "INSTALL sxiv.1"
-	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	sed "s!PREFIX!$(PREFIX)!g; s!VERSION!$(version)!g" sxiv.1 \
-		>$(DESTDIR)$(MANPREFIX)/man1/sxiv.1
-	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/sxiv.1
-	@echo "INSTALL share/sxiv/"
-	mkdir -p $(DESTDIR)$(PREFIX)/share/sxiv/exec
-	cp exec/* $(DESTDIR)$(PREFIX)/share/sxiv/exec/
-	chmod 755 $(DESTDIR)$(PREFIX)/share/sxiv/exec/*
+	#@echo "INSTALL sxiv.1"
+	#mkdir -p $(DESTDIR)$(MANPREFIX)/man1
+	#sed "s!PREFIX!$(PREFIX)!g; s!VERSION!$(version)!g" sxiv.1 \
+	#	>$(DESTDIR)$(MANPREFIX)/man1/sxiv.1
+	#chmod 644 $(DESTDIR)$(MANPREFIX)/man1/sxiv.1
+	#@echo "INSTALL share/sxiv/"
+	#mkdir -p $(DESTDIR)$(PREFIX)/share/sxiv/exec
+	#cp exec/* $(DESTDIR)$(PREFIX)/share/sxiv/exec/
+	#chmod 755 $(DESTDIR)$(PREFIX)/share/sxiv/exec/*
 
 uninstall:
 	@echo "REMOVE bin/sxiv"
