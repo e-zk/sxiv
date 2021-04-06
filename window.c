@@ -31,10 +31,14 @@
 
 #define RES_CLASS "Sxiv"
 
-enum {
+
+// why were these enums in the first place?
+/*enum {
 	H_TEXT_PAD = 5,
 	V_TEXT_PAD = 1
-};
+};*/
+
+int h_txt_pad = 12, v_txt_pad = 8;
 
 static struct {
 	int name;
@@ -59,7 +63,7 @@ void win_init_font(const win_env_t *e, const char *fontstr)
 		error(EXIT_FAILURE, 0, "Error loading font '%s'", fontstr);
 	fontheight = font->ascent + font->descent;
 	FcPatternGetDouble(font->pattern, FC_SIZE, 0, &fontsize);
-	barheight = fontheight + 2 * V_TEXT_PAD;
+	barheight = fontheight + 2 * v_txt_pad;
 }
 
 void win_alloc_color(const win_env_t *e, const char *name, XftColor *col)
@@ -92,7 +96,7 @@ const char* win_res(XrmDatabase db, const char *name, const char *def)
 void win_init(win_t *win)
 {
 	win_env_t *e;
-	const char *bg, *fg, *f;
+	const char *bg, *fg, *f, *h_pad, *v_pad;
 	char *res_man;
 	XrmDatabase db;
 
@@ -118,6 +122,12 @@ void win_init(win_t *win)
 
 	f = win_res(db, RES_CLASS ".font", "monospace-8");
 	win_init_font(e, f);
+
+	h_pad = win_res(db, RES_CLASS ".hpad", "12");
+	sscanf(h_pad, "%d", &h_txt_pad);
+
+	v_pad = win_res(db, RES_CLASS ".vpad", "8");
+	sscanf(v_pad, "%d", &v_txt_pad);
 
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
@@ -392,8 +402,8 @@ void win_draw_bar(win_t *win)
 		return;
 
 	e = &win->env;
-	y = win->h + font->ascent + V_TEXT_PAD;
-	w = win->w - 2*H_TEXT_PAD;
+	y = win->h + font->ascent + v_txt_pad;
+	w = win->w - 2*h_txt_pad;
 	d = XftDrawCreate(e->dpy, win->buf.pm, DefaultVisual(e->dpy, e->scr),
 	                  DefaultColormap(e->dpy, e->scr));
 
@@ -406,13 +416,13 @@ void win_draw_bar(win_t *win)
 	if ((len = strlen(r->buf)) > 0) {
 		if ((tw = TEXTWIDTH(win, r->buf, len)) > w)
 			return;
-		x = win->w - tw - H_TEXT_PAD;
+		x = win->w - tw - h_txt_pad;
 		w -= tw;
 		win_draw_text(win, d, &win->bg, x, y, r->buf, len, tw);
 	}
 	if ((len = strlen(l->buf)) > 0) {
-		x = H_TEXT_PAD;
-		w -= 2 * H_TEXT_PAD; /* gap between left and right parts */
+		x = h_txt_pad;
+		w -= 2 * h_txt_pad; /* gap between left and right parts */
 		win_draw_text(win, d, &win->bg, x, y, l->buf, len, w);
 	}
 	XftDrawDestroy(d);
