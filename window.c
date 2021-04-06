@@ -38,7 +38,6 @@
 	V_TEXT_PAD = 1
 };*/
 
-int h_txt_pad = 12, v_txt_pad = 8;
 
 static struct {
 	int name;
@@ -53,6 +52,8 @@ static GC gc;
 static XftFont *font;
 static int fontheight;
 static double fontsize;
+static int h_txt_pad;
+static int v_txt_pad;
 static int barheight;
 
 Atom atoms[ATOM_COUNT];
@@ -120,14 +121,14 @@ void win_init(win_t *win)
 	res_man = XResourceManagerString(e->dpy);
 	db = res_man != NULL ? XrmGetStringDatabase(res_man) : None;
 
-	f = win_res(db, RES_CLASS ".font", "monospace-8");
-	win_init_font(e, f);
-
 	h_pad = win_res(db, RES_CLASS ".hpad", "12");
 	sscanf(h_pad, "%d", &h_txt_pad);
 
 	v_pad = win_res(db, RES_CLASS ".vpad", "8");
 	sscanf(v_pad, "%d", &v_txt_pad);
+
+	f = win_res(db, RES_CLASS ".font", "monospace-8");
+	win_init_font(e, f);
 
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
